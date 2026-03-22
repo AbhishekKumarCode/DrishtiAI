@@ -390,6 +390,7 @@ function cleanAI(text) {
     .replace(/^\s*[-•]\s+/gm,    '• ')   // bullet -
     .replace(/^\s*\d+\.\s+/gm,   (m) => m.trim() + ' ') // 1. list
     .replace(/\n{3,}/g,          '\n\n') // excess blank lines
+    .replace(/[\p{Emoji_Presentation}\p{Extended_Pictographic}]/gu, '') // strip emojis
     .trim();
 }
 
