@@ -1,0 +1,785 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta
+      name="viewport"
+      content="width=device-width, initial-scale=1.0, viewport-fit=cover"
+    />
+    <meta name="theme-color" content="#00C9A7" />
+    <meta name="apple-mobile-web-app-capable" content="yes" />
+    <meta
+      name="apple-mobile-web-app-status-bar-style"
+      content="black-translucent"
+    />
+    <meta name="apple-mobile-web-app-title" content="DrishtiAI" />
+    <meta name="mobile-web-app-capable" content="yes" />
+    <meta name="application-name" content="DrishtiAI" />
+    <meta
+      name="description"
+      content="AI Healthcare Companion for elderly and disabled Indians"
+    />
+    <link rel="manifest" href="manifest.json" />
+    <link rel="apple-touch-icon" href="icon-192.png" />
+    <link rel="icon" type="image/png" sizes="192x192" href="icon-192.png" />
+    <title>DrishtiAI — Live Demo</title>
+    <script src="https://unpkg.com/tesseract.js@5/dist/tesseract.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link
+      href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;0,9..40,600;0,9..40,700;0,9..40,800&family=Noto+Sans+Devanagari:wght@400;500;600;700&display=swap"
+      rel="stylesheet"
+    />
+    <link rel="stylesheet" href="demo.css" />
+  </head>
+  <body>
+    <div id="app">
+      <!-- ════════════════════════════════════
+     HOME
+════════════════════════════════════ -->
+      <div id="screen-home" class="screen active">
+        <div class="scroll-area">
+          <!-- Hero -->
+          <div class="home-hero">
+            <div class="home-hero-top">
+              <div class="brand-row">
+                <div class="brand-orb">👁️</div>
+                <div>
+                  <div class="brand-name">Drishti<span>AI</span></div>
+                  <span class="brand-sub">दृष्टि AI</span>
+                </div>
+              </div>
+            </div>
+
+            <div class="greeting-block">
+              <div class="greeting-hi" id="greeting-hi">Good morning</div>
+              <div class="greeting-main">
+                Your AI<br /><span>Healthcare</span> Companion
+              </div>
+              <div class="greeting-hint">
+                <div class="hint-dot"></div>
+                All features ready · Hindi voice active
+              </div>
+            </div>
+
+            <div class="alert-pill" onclick="openModule('daily')">
+              <span class="ap-icon">⏰</span>
+              <div>
+                <div class="ap-title">Medicine Reminder</div>
+                <div class="ap-sub">Amlodipine 5mg · Due at 8:00 AM</div>
+              </div>
+              <span class="ap-arrow">›</span>
+            </div>
+          </div>
+
+          <!-- Modules -->
+          <div class="modules-wrap">
+            <div class="section-label">Modules</div>
+            <div class="modules-grid">
+              <div class="mod-card" onclick="openModule('medicine')">
+                <div
+                  class="mod-icon"
+                  style="background: rgba(0, 196, 163, 0.08)"
+                >
+                  💊
+                </div>
+                <div class="mod-name">Medicine Reader</div>
+                <div class="mod-hindi">क्या दिख रहा है?</div>
+                <div class="mod-desc">
+                  Camera reads medicine &amp; explains in Hindi
+                </div>
+                <span class="mod-arrow">›</span>
+              </div>
+              <div class="mod-card" onclick="openModule('document')">
+                <div
+                  class="mod-icon"
+                  style="background: rgba(217, 119, 6, 0.08)"
+                >
+                  📄
+                </div>
+                <div class="mod-name">Document Help</div>
+                <div class="mod-hindi">दस्तावेज़ समझाओ</div>
+                <div class="mod-desc">
+                  Scan govt docs — AI explains what to do
+                </div>
+                <span class="mod-arrow">›</span>
+              </div>
+              <div class="mod-card" onclick="openModule('games')">
+                <div
+                  class="mod-icon"
+                  style="background: rgba(99, 102, 241, 0.08)"
+                >
+                  🧠
+                </div>
+                <div class="mod-name">Brain Games</div>
+                <div class="mod-hindi">दिमाग की कसरत</div>
+                <div class="mod-desc">Memory, quiz &amp; pattern games</div>
+                <span class="mod-arrow">›</span>
+              </div>
+              <div class="mod-card" onclick="openModule('daily')">
+                <div
+                  class="mod-icon"
+                  style="background: rgba(225, 29, 72, 0.07)"
+                >
+                  ☀️
+                </div>
+                <div class="mod-name">Daily Companion</div>
+                <div class="mod-hindi">रोज़ का साथी</div>
+                <div class="mod-desc">
+                  Reminders, mood &amp; morning briefing
+                </div>
+                <span class="mod-arrow">›</span>
+              </div>
+            </div>
+
+            <!-- Speak CTA -->
+            <button class="speak-cta" onclick="speakWelcome()">
+              <div class="speak-left">
+                <div class="speak-orb">🔊</div>
+                <div>
+                  <span class="speak-title">नमस्ते — Speak Welcome</span>
+                  <span class="speak-sub">Tap to hear greeting in Hindi</span>
+                </div>
+              </div>
+              <span class="speak-chevron">›</span>
+            </button>
+
+            <!-- Quick tools -->
+            <div class="quick-tools">
+              <button class="qt-btn" id="btn-hc" onclick="toggleHC()">
+                <span class="qt-icon">🌗</span>High Contrast
+              </button>
+              <button class="qt-btn" id="btn-lt" onclick="toggleLT()">
+                <span class="qt-icon">🔠</span>Large Text
+              </button>
+              <button class="qt-btn" onclick="stopSpeech()">
+                <span class="qt-icon">🔇</span>Stop Voice
+              </button>
+
+              <button class="qt-btn" id="btn-lang" onclick="toggleLang()">
+                <span class="qt-icon">🇮🇳</span>हिंदी
+              </button>
+            </div>
+
+            <div style="margin-top: 0.75rem; text-align: center">
+              <a
+                href="index.html"
+                style="
+                  font-size: 0.72rem;
+                  color: var(--t3);
+                  text-decoration: none;
+                "
+                >← Back to Landing Page</a
+              >
+            </div>
+          </div>
+        </div>
+
+        <!-- Bottom Nav -->
+        <div class="bottom-nav">
+          <div class="bnav-item active" onclick="goHome()">
+            <span class="bnav-icon">🏠</span>Home
+          </div>
+          <div class="bnav-item" onclick="openModule('medicine')">
+            <span class="bnav-icon">💊</span>Medicine
+          </div>
+          <div class="bnav-item" onclick="openModule('games')">
+            <span class="bnav-icon">🧠</span>Games
+          </div>
+          <div class="bnav-item" onclick="openModule('daily')">
+            <span class="bnav-icon">☀️</span>Daily
+          </div>
+        </div>
+      </div>
+
+      <!-- ════════════════════════════════════
+     MEDICINE READER
+════════════════════════════════════ -->
+      <div id="screen-medicine" class="screen">
+        <div class="page-header">
+          <button class="back-btn" onclick="goHome()">‹</button>
+          <div>
+            <div class="ph-title">Medicine Reader</div>
+            <span class="ph-sub">क्या दिख रहा है?</span>
+          </div>
+          <button
+            class="ph-action"
+            id="med-speak-ph"
+            onclick="speakResult('med-txt', 'med-speak-ph')"
+          >
+            🔊
+          </button>
+        </div>
+
+        <div class="cam-outer">
+          <!-- Camera view -->
+          <div class="cam-wrap" id="med-cam-wrap">
+            <video id="med-video" autoplay playsinline muted></video>
+            <canvas id="med-canvas"></canvas>
+            <img id="med-preview" class="cam-captured" alt="Captured" />
+            <div class="cam-ui" id="med-ui">
+              <div style="flex: 1; position: relative">
+                <div class="cam-guide" id="med-guide">
+                  <div class="cam-corner tl"></div>
+                  <div class="cam-corner tr"></div>
+                  <div class="cam-corner bl"></div>
+                  <div class="cam-corner br"></div>
+                  <div class="cam-scan-line"></div>
+                </div>
+              </div>
+              <div class="cam-scrim">
+                <div class="cam-hint" id="med-hint">
+                  📍 Place medicine label in the frame
+                </div>
+                <div class="cam-btn-row">
+                  <button
+                    class="cam-shutter"
+                    id="med-cap-btn"
+                    onclick="capture('medicine')"
+                  >
+                    📸 Capture &amp; Analyze
+                  </button>
+                  <button
+                    class="cam-retry-btn hidden"
+                    id="med-retry-btn"
+                    onclick="retry('medicine')"
+                  >
+                    🔄
+                  </button>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Loading -->
+          <div id="med-loading" class="hidden cam-result-scroll">
+            <div class="ai-loading anim-in">
+              <div class="ring-spinner"><div class="ring-pulse"></div></div>
+              <div class="loading-txt">
+                <span>Reading text from image…</span>
+                तस्वीर से text पढ़ रहा हूँ
+              </div>
+            </div>
+          </div>
+
+          <!-- Result -->
+          <div id="med-result" class="hidden cam-result-scroll">
+            <div class="ai-card anim-in">
+              <div class="ai-label">
+                <div class="ai-label-left">
+                  <div class="ai-dot"></div>
+                  <span class="ai-tag">AI Result — दवाई की जानकारी</span>
+                </div>
+                <button
+                  class="ai-speak-btn"
+                  id="med-spk"
+                  onclick="speakResult('med-txt', 'med-spk')"
+                >
+                  🔊
+                </button>
+              </div>
+              <div class="ai-body" id="med-txt"></div>
+            </div>
+            <button class="rescan-btn" onclick="retry('medicine')">
+              📸 Scan Another Medicine
+            </button>
+          </div>
+
+          <!-- No camera -->
+          <div id="med-nocam" class="hidden">
+            <div class="no-cam-msg">
+              Camera access denied.<br />Please allow camera permissions and
+              reload the page.
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- ════════════════════════════════════
+     DOCUMENT NAVIGATOR
+════════════════════════════════════ -->
+      <div id="screen-document" class="screen">
+        <div class="page-header">
+          <button class="back-btn" onclick="goHome()">‹</button>
+          <div>
+            <div class="ph-title">Document Help</div>
+            <span class="ph-sub">दस्तावेज़ समझाओ</span>
+          </div>
+          <button
+            class="ph-action"
+            id="doc-speak-ph"
+            onclick="speakResult('doc-txt', 'doc-speak-ph')"
+          >
+            🔊
+          </button>
+        </div>
+
+        <div class="cam-outer">
+          <div class="cam-wrap" id="doc-cam-wrap">
+            <video id="doc-video" autoplay playsinline muted></video>
+            <canvas id="doc-canvas"></canvas>
+            <img id="doc-preview" class="cam-captured" alt="Captured" />
+            <div class="cam-ui" id="doc-ui">
+              <div style="flex: 1; position: relative">
+                <div class="cam-guide" id="doc-guide">
+                  <div class="cam-corner tl"></div>
+                  <div class="cam-corner tr"></div>
+                  <div class="cam-corner bl"></div>
+                  <div class="cam-corner br"></div>
+                  <div class="cam-scan-line"></div>
+                </div>
+              </div>
+              <div class="cam-scrim">
+                <div class="cam-hint" id="doc-hint">
+                  📄 Keep document flat — text must be clear
+                </div>
+                <div class="cam-btn-row">
+                  <button
+                    class="cam-shutter"
+                    id="doc-cap-btn"
+                    onclick="capture('document')"
+                  >
+                    📸 Capture &amp; Analyze
+                  </button>
+                  <button
+                    class="cam-retry-btn hidden"
+                    id="doc-retry-btn"
+                    onclick="retry('document')"
+                  >
+                    🔄
+                  </button>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div id="doc-loading" class="hidden cam-result-scroll">
+            <div class="ai-loading anim-in">
+              <div class="ring-spinner"><div class="ring-pulse"></div></div>
+              <div class="loading-txt">
+                <span>Reading text from document…</span>
+                दस्तावेज़ से text पढ़ रहा हूँ
+              </div>
+            </div>
+          </div>
+
+          <div id="doc-result" class="hidden cam-result-scroll">
+            <div class="ai-card anim-in">
+              <div class="ai-label">
+                <div class="ai-label-left">
+                  <div class="ai-dot"></div>
+                  <span class="ai-tag">AI Result — दस्तावेज़ की जानकारी</span>
+                </div>
+                <button
+                  class="ai-speak-btn"
+                  id="doc-spk"
+                  onclick="speakResult('doc-txt', 'doc-spk')"
+                >
+                  🔊
+                </button>
+              </div>
+              <div class="ai-body" id="doc-txt"></div>
+            </div>
+            <button class="rescan-btn" onclick="retry('document')">
+              📸 Scan Another Document
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <!-- ════════════════════════════════════
+     BRAIN GAMES HUB
+════════════════════════════════════ -->
+      <div id="screen-games" class="screen">
+        <div class="page-header">
+          <button class="back-btn" onclick="goHome()">‹</button>
+          <div>
+            <div class="ph-title">Brain Games</div>
+            <span class="ph-sub">दिमाग की कसरत</span>
+          </div>
+        </div>
+
+        <div class="games-scroll">
+          <!-- Score dashboard -->
+          <div class="score-dash anim-in">
+            <div class="sd-item">
+              <span class="sd-val" id="g-total">0</span>
+              <span class="sd-lbl">Points</span>
+            </div>
+            <div class="sd-divider"></div>
+            <div class="sd-item">
+              <span class="sd-val" id="g-played" style="color: var(--amber)"
+                >0</span
+              >
+              <span class="sd-lbl">Played</span>
+            </div>
+            <div class="sd-divider"></div>
+            <div class="sd-item">
+              <span class="sd-val" id="g-streak" style="color: var(--purple)"
+                >0🔥</span
+              >
+              <span class="sd-lbl">Streak</span>
+            </div>
+          </div>
+
+          <div class="game-list-label">Choose a Game</div>
+
+          <div class="game-row" onclick="startGame('memory')">
+            <div class="g-icon-box" style="background: rgba(0, 201, 167, 0.1)">
+              🃏
+            </div>
+            <div>
+              <div class="g-name">Memory Match</div>
+              <div class="g-desc">याददाश्त खेल — Flip cards, find pairs</div>
+            </div>
+            <span class="g-badge">Short-term memory</span>
+          </div>
+          <div class="game-row" onclick="startGame('quiz')">
+            <div
+              class="g-icon-box"
+              style="background: rgba(129, 140, 248, 0.1)"
+            >
+              ❓
+            </div>
+            <div>
+              <div class="g-name">Word Quiz</div>
+              <div class="g-desc">शब्द पहचान — Hindi knowledge questions</div>
+            </div>
+            <span class="g-badge">Thinking &amp; recall</span>
+          </div>
+          <div class="game-row" onclick="startGame('pattern')">
+            <div class="g-icon-box" style="background: rgba(245, 158, 11, 0.1)">
+              🔢
+            </div>
+            <div>
+              <div class="g-name">Pattern Finder</div>
+              <div class="g-desc">क्रम खोजो — Memorize the sequence</div>
+            </div>
+            <span class="g-badge">Logic &amp; reasoning</span>
+          </div>
+
+          <div
+            style="
+              margin-top: 0.85rem;
+              padding: 0.85rem;
+              background: rgba(0, 201, 167, 0.05);
+              border: 1px solid var(--line);
+              border-radius: var(--r);
+            "
+          >
+            <div
+              style="
+                font-size: 0.72rem;
+                color: var(--teal);
+                font-weight: 700;
+                margin-bottom: 0.3rem;
+              "
+            >
+              💡 Research Tip
+            </div>
+            <div style="font-size: 0.78rem; color: var(--t2); line-height: 1.6">
+              15 minutes of daily brain games can improve memory and slow
+              cognitive decline in adults over 60.
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- MEMORY GAME -->
+      <div id="screen-memory" class="screen">
+        <div class="page-header">
+          <button class="back-btn" onclick="show('screen-games')">‹</button>
+          <div>
+            <div class="ph-title">Memory Match 🃏</div>
+            <span class="ph-sub">याददाश्त खेल</span>
+          </div>
+        </div>
+        <div class="game-bar">
+          <div class="gb-stat">
+            <span class="gb-val" id="m-moves">0</span
+            ><span class="gb-lbl">Moves</span>
+          </div>
+          <div class="gb-stat">
+            <span class="gb-val" id="m-matches">0</span
+            ><span class="gb-lbl">Matches</span>
+          </div>
+          <div class="gb-stat">
+            <span class="gb-val">8</span><span class="gb-lbl">Total</span>
+          </div>
+          <button class="gb-btn" onclick="initMemory()">↺ New</button>
+        </div>
+        <div class="mem-scroll">
+          <div class="mem-grid" id="mem-grid"></div>
+          <div id="mem-win" class="congrats-card hidden">
+            <span class="trophy">🏆</span>
+            <h3>शाबाश! Well Done!</h3>
+            <p id="mem-win-msg"></p>
+            <button
+              class="cam-shutter"
+              style="margin-top: 1rem"
+              onclick="initMemory()"
+            >
+              Play Again
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <!-- QUIZ -->
+      <div id="screen-quiz" class="screen">
+        <div class="page-header">
+          <button class="back-btn" onclick="show('screen-games')">‹</button>
+          <div>
+            <div class="ph-title">Word Quiz ❓</div>
+            <span class="ph-sub">शब्द पहचान</span>
+          </div>
+          <div style="font-size: 0.78rem; color: var(--t3)">
+            <span id="q-n" style="color: var(--teal); font-weight: 700">1</span
+            >/10
+          </div>
+        </div>
+        <div class="quiz-scroll">
+          <div class="quiz-progress-bar">
+            <div
+              class="quiz-progress-fill"
+              id="quiz-prog"
+              style="width: 10%"
+            ></div>
+          </div>
+          <div class="quiz-question-card" id="quiz-q">Loading…</div>
+          <div class="quiz-opts" id="quiz-opts"></div>
+          <div id="quiz-fb" class="quiz-fb-box hidden"></div>
+          <button
+            class="cam-shutter hidden"
+            id="quiz-next"
+            style="margin-top: 0.85rem"
+            onclick="nextQ()"
+          >
+            Next Question →
+          </button>
+          <div id="quiz-done" class="congrats-card hidden">
+            <span class="trophy">🌟</span>
+            <h3>Quiz Complete!</h3>
+            <p id="quiz-done-msg"></p>
+            <button
+              class="cam-shutter"
+              style="margin-top: 1rem"
+              onclick="initQuiz()"
+            >
+              Play Again
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <!-- PATTERN -->
+      <div id="screen-pattern" class="screen">
+        <div class="page-header">
+          <button class="back-btn" onclick="show('screen-games')">‹</button>
+          <div>
+            <div class="ph-title">Pattern Finder 🔢</div>
+            <span class="ph-sub">क्रम खोजो</span>
+          </div>
+        </div>
+        <div class="game-bar">
+          <div class="gb-stat">
+            <span class="gb-val" id="p-lvl">1</span
+            ><span class="gb-lbl">Level</span>
+          </div>
+          <div class="gb-stat">
+            <span class="gb-val" id="p-sc">0</span
+            ><span class="gb-lbl">Score</span>
+          </div>
+          <div class="gb-stat">
+            <span class="gb-val" id="p-lives">❤️❤️❤️</span
+            ><span class="gb-lbl">Lives</span>
+          </div>
+        </div>
+        <div class="pat-scroll">
+          <div class="pat-instruction" id="p-inst">
+            Watch the pattern, then tap it!
+          </div>
+          <div class="pat-grid" id="pat-grid"></div>
+          <div id="pat-done" class="congrats-card hidden">
+            <span class="trophy">🎯</span>
+            <h3 id="pat-done-title">Well Played!</h3>
+            <p id="pat-done-msg"></p>
+            <button
+              class="cam-shutter"
+              style="margin-top: 1rem"
+              onclick="initPattern()"
+            >
+              Play Again
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <!-- ════════════════════════════════════
+     DAILY COMPANION
+════════════════════════════════════ -->
+      <div id="screen-daily" class="screen">
+        <div class="page-header">
+          <button class="back-btn" onclick="goHome()">‹</button>
+          <div>
+            <div class="ph-title">Daily Companion</div>
+            <span class="ph-sub">रोज़ का साथी</span>
+          </div>
+        </div>
+
+        <div class="daily-scroll">
+          <!-- Clock -->
+          <div class="clock-hero anim-in">
+            <div>
+              <div class="clock-big" id="d-clock">--:--</div>
+            </div>
+            <div class="clock-info">
+              <div class="clock-date" id="d-date"></div>
+              <div class="clock-day" id="d-day"></div>
+              <div class="clock-am" id="d-ampm"></div>
+            </div>
+          </div>
+
+          <!-- Morning message -->
+          <div class="info-card">
+            <div class="ic-head">
+              <div class="ic-title">🌅 Morning Message</div>
+              <span class="ic-action" onclick="speakMorning()">🔊 Listen</span>
+            </div>
+            <div class="morning-text" id="morning-msg">…</div>
+          </div>
+
+          <!-- Reminders -->
+          <div class="info-card">
+            <div class="ic-head">
+              <div class="ic-title">⏰ Today's Reminders</div>
+              <span class="ic-action" onclick="speakReminders()"
+                >🔊 Remind</span
+              >
+            </div>
+            <div id="reminders"></div>
+          </div>
+
+          <!-- Mood -->
+          <div class="info-card" style="margin-bottom: 1rem">
+            <div class="ic-head">
+              <div class="ic-title">💭 How Are You Feeling?</div>
+            </div>
+            <div class="mood-grid">
+              <button class="mood-btn" onclick="mood(this, 'very sad')">
+                <span class="mood-e">😢</span
+                ><span class="mood-l">बहुत उदास</span>
+              </button>
+              <button class="mood-btn" onclick="mood(this, 'sad')">
+                <span class="mood-e">😔</span><span class="mood-l">उदास</span>
+              </button>
+              <button class="mood-btn" onclick="mood(this, 'okay')">
+                <span class="mood-e">😐</span><span class="mood-l">ठीक है</span>
+              </button>
+              <button class="mood-btn" onclick="mood(this, 'happy')">
+                <span class="mood-e">😊</span><span class="mood-l">खुश</span>
+              </button>
+              <button class="mood-btn" onclick="mood(this, 'very happy')">
+                <span class="mood-e">😄</span
+                ><span class="mood-l">बहुत खुश</span>
+              </button>
+            </div>
+            <div id="mood-msg" class="mood-response hidden"></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- NARRATOR -->
+      <div class="narrator" id="narrator">
+        <div class="waves">
+          <div class="wave"></div>
+          <div class="wave"></div>
+          <div class="wave"></div>
+          <div class="wave"></div>
+          <div class="wave"></div>
+          <div class="wave"></div>
+          <div class="wave"></div>
+        </div>
+        <div class="narrator-txt" id="narrator-txt">Speaking…</div>
+        <button class="narrator-stop" onclick="stopSpeech()">⏹</button>
+      </div>
+
+      <!-- Floating voice command mic -->
+      <button
+        class="voice-fab"
+        id="voice-fab"
+        onclick="toggleVoiceCommand()"
+        title="Voice Command"
+      >
+        🎤
+      </button>
+      <div class="vc-toast" id="vc-toast"></div>
+
+      <!-- AI Chat Modal overlay -->
+      <div
+        class="ai-chat-overlay"
+        id="ai-chat-overlay"
+        onclick="closeAIPanel()"
+      ></div>
+
+      <!-- AI Chat Modal window -->
+      <div class="ai-chat-modal" id="ai-chat-panel">
+        <div class="acm-header">
+          <div class="acm-avatar">🤖</div>
+          <div class="acm-info">
+            <div class="acm-name" id="acp-title-txt">DrishtiAI</div>
+            <div class="acm-status" id="acm-status">
+              Online • Ready to help!
+            </div>
+          </div>
+          <button class="acm-close" onclick="closeAIPanel()">✕</button>
+        </div>
+
+        <div class="acm-history" id="acp-history">
+          <div class="acm-welcome">
+            <span class="acm-wi">🤖</span>
+            <span id="acm-welcome-txt"
+              >Namaste! I'm DrishtiAI, your goofy little helper. Ask me anything
+              — I might even make you smile!</span
+            >
+          </div>
+        </div>
+
+        <div class="acm-input-bar">
+          <input
+            class="acp-input"
+            id="acp-input"
+            type="text"
+            placeholder="Type your question…"
+            autocomplete="off"
+            onkeydown="if (event.key === 'Enter') sendAIChat();"
+          />
+          <button
+            class="acm-voice-btn"
+            id="acm-voice-btn"
+            onclick="toggleChatVoice()"
+            title="Speak"
+          >
+            🎤
+          </button>
+          <button class="acp-send" onclick="sendAIChat()">➤</button>
+        </div>
+      </div>
+
+      <!-- AI chat open button -->
+      <button
+        class="ai-chat-fab"
+        id="ai-chat-fab"
+        onclick="toggleAIPanel()"
+        title="Ask AI"
+      >
+        💬
+      </button>
+    </div>
+    <!-- #app -->
+
+    <!-- JAVASCRIPT -->
+
+    <script src="demo.js"></script>
+  </body>
+</html>
